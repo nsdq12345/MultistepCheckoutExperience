@@ -43,6 +43,7 @@ CREATE TABLE payment(
     id integer AUTO_INCREMENT,
     checkout_id integer,
     credit_card_number VARCHAR(32),
+    cvv VARCHAR(32),
     exp_date VARCHAR(32),
     zip VARCHAR(32),
     PRIMARY KEY (id),

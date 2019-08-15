@@ -13,7 +13,8 @@ class Form extends React.Component {
             <CheckOut setId={this.setId.bind(this)} getId={this.getId.bind(this)} nextStage={this.nextStage}/>, 
             <SignUpForm getId={this.getId.bind(this)} nextStage={this.nextStage}/>, 
             <AddressForm getId={this.getId.bind(this)} nextStage={this.nextStage}/>, 
-            <PaymentForm getId={this.getId.bind(this)} nextStage={this.nextStage}/>
+            <PaymentForm getId={this.getId.bind(this)} nextStage={this.nextStage}/>,
+            <Results getId={this.getId.bind(this)} nextStage={this.nextStage}/>
         ];
     }
 
@@ -29,7 +30,7 @@ class Form extends React.Component {
 
     nextStage() {
         var newStage = 0;
-        if (this.state.stage < 3) {
+        if (this.state.stage < (this.stages.length-1)){
             newStage = this.state.stage + 1;
         }
 
@@ -72,6 +73,7 @@ class SignUpForm extends React.Component {
         super(props);
 
         this.state = {
+            checkoutId: '',
             firstName: '',
             lastName: '',
             email: '',
@@ -80,8 +82,11 @@ class SignUpForm extends React.Component {
     }
 
     loadData() {
-        fetch('/signup', {
+        fetch('/person', {
             method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify(this.state)
         })
         .then(() => {
@@ -112,6 +117,10 @@ class SignUpForm extends React.Component {
                     })
                     break;
         }
+
+        this.setState({
+            checkoutId: this.props.getId()
+        });
     }
     
     render() {
@@ -143,6 +152,62 @@ class SignUpForm extends React.Component {
 class AddressForm extends React.Component {
     constructor(props) {
         super(props);
+        
+        this.state = {
+            checkoutId: '',
+            line1: '',
+            line2: '',
+            city: '',
+            state: '',
+            zip: ''
+        }
+    }
+
+    loadData() {
+        fetch('/address', {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(this.state)
+        })
+        .then(() => {
+            this.props.nextStage();
+        })
+    }
+
+    updateData(e) {
+        switch(e.target.name) {
+            case 'line1':
+                this.setState({
+                    line1: e.target.value
+                });
+                break;
+            case 'line2':
+                this.setState({
+                    line2: e.target.value
+                })
+                break;
+            case 'city':
+                    this.setState({
+                        city: e.target.value
+                    })
+                    break;
+            case 'state':
+                    this.setState({
+                        state: e.target.value
+                    })
+                    break;
+            case 'zip':
+                    this.setState({
+                        zip: e.target.value
+                    })
+                    break;
+        }
+
+        this.setState({
+            checkoutId: this.props.getId()
+        });
     }
     
     render() {
@@ -152,27 +217,24 @@ class AddressForm extends React.Component {
             <table>
                 <tbody>
                     <tr>
-                        <td>Line 1: </td><td><input type="text"/></td>
+                        <td>Line 1: </td><td><input name="line1" onChange={(e) => this.updateData(e)} type="text"/></td>
                     </tr>
                     <tr>
-                        <td>Line 2: </td><td><input type="text"/></td>
+                        <td>Line 2: </td><td><input name="line2" onChange={(e) => this.updateData(e)} type="text"/></td>
                     </tr>
                     <tr>
-                        <td>City: </td><td><input type="text"/></td>
+                        <td>City: </td><td><input name="city" onChange={(e) => this.updateData(e)} type="text"/></td>
                     </tr>
                     <tr>
-                        <td>State: </td><td><input type="text"/></td>
+                        <td>State: </td><td><input name="state" onChange={(e) => this.updateData(e)} type="text"/></td>
                     </tr>
                     <tr>
-                        <td>Zip: </td><td><input type="text"/></td>
-                    </tr>
-                    <tr>
-                        <td>Phone: </td><td><input type="text"/></td>
+                        <td>Zip: </td><td><input name="zip" onChange={(e) => this.updateData(e)} type="text"/></td>
                     </tr>
                 </tbody>
             </table>
             <br/>
-            <button onClick={() => this.props.nextStage()}>Submit</button>
+            <button onClick={() => this.loadData()}>Submit</button>
         </div>);
     }
 };
@@ -180,6 +242,56 @@ class AddressForm extends React.Component {
 class PaymentForm extends React.Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            checkoutId: '',
+            creditCardNumber: '',
+            expiration: '',
+            cvv: '',
+            zip: ''
+        };
+    }
+
+    loadData() {
+        fetch('/payment', {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(this.state)
+        })
+        .then(() => {
+            this.props.nextStage();
+        })
+    }
+
+    updateData(e) {
+        switch(e.target.name) {
+            case 'creditCardNumber':
+                this.setState({
+                    creditCardNumber: e.target.value
+                });
+                break;
+            case 'expiration':
+                    this.setState({
+                        expiration: e.target.value
+                    });
+                    break;
+            case 'cvv':
+                this.setState({
+                    cvv: e.target.value
+                })
+                break;
+            case 'zip':
+                    this.setState({
+                        zip: e.target.value
+                    })
+                    break;
+        }
+
+        this.setState({
+            checkoutId: this.props.getId()
+        });
     }
     
     render() {
@@ -189,25 +301,60 @@ class PaymentForm extends React.Component {
             <table>
                 <tbody>
                     <tr>
-                        <td>Credit Card Number: </td><td><input type="text"/></td>
+                        <td>Credit Card Number: </td><td><input name="creditCardNumber" onChange={(e) => this.updateData(e)} type="text"/></td>
                     </tr>
                     <tr>
-                        <td>Expiration: </td><td><input type="text"/></td>
+                        <td>Expiration: </td><td><input name="expiration" onChange={(e) => this.updateData(e)} type="text"/></td>
                     </tr>
                     <tr>
-                        <td>CVV: </td><td><input type="text"/></td>
+                        <td>CVV: </td><td><input name="cvv" onChange={(e) => this.updateData(e)} type="text"/></td>
                     </tr>
                     <tr>
-                        <td>Billing Zip Code: </td><td><input type="text"/></td>
+                        <td>Billing Zip Code: </td><td><input name="zip" onChange={(e) => this.updateData(e)} type="text"/></td>
                     </tr>
                 </tbody>
             </table>
             <br/>
-            <button onClick={() => this.props.nextStage()}>Submit</button>
+            <button onClick={() => this.loadData()}>Submit</button>
         </div>);
     }
 }
 
+class Results extends React.Component {
+
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            results: '',
+            id: ''
+        }
+    }
+
+    componentDidMount(){
+
+        fetch('/results', {
+            headers: {
+                id: this.props.getId()
+            }
+        })
+        .then(data => {
+            return data.text();
+        })
+        .then(data => {
+            this.setState({
+                results: data
+            });
+        });
+    }
+
+    render() {
+        return (<div>
+            <div>{this.state.results}</div>
+            <button onClick={() => this.props.nextStage()}>Submit</button>
+        </div>);
+    }
+}
 
 
 ReactDOM.render(<Form />, document.getElementById('app'));
